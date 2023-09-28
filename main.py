@@ -10,6 +10,11 @@ async def start(message: types.Message):
 
     await message.answer(start_, parse_mode='MarkdownV2')
 
+@dp.message_handler(commands=['cr', 'c-r', 'c_r', 'currate', 'cur-rate', 'cur_rate'])
+async def cur_rate(message: types.Message):
+    await message.answer('Выберете *валюту*, из которой вы конвертируете: ', reply_markup=cur_(), parse_mode='MarkdownV2')
+    sql.set_state(message.from_user.id, 4)
+
 @dp.message_handler(commands=['c', 'cur', 'currency'])
 async def cur(message: types.Message):
     await message.answer('Выберете *валюту*, из которой вы конвертируете: ', reply_markup=cur_(f_t='_'), parse_mode='MarkdownV2')
@@ -46,6 +51,14 @@ async def get_cur(message: types.Message):
     sub_data = sub_data.split('_')
     result = (data[sub_data[1]] / data[sub_data[0]]) * message.text
     await message.answer(f'`{message.text}` {sub_data[0]} \= `{result:.6g}` {sub_data[1]}', parse_mode='MarkdownV2')
+
+@dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 4)
+async def get_cur_rate(call: types.CallbackQuery):
+    data = requests.get('https://www.cbr-xml-daily.ru/latest.js').json()
+    data = data["rates"]
+
+    result = (1 / data[call.data])
+    await call.message.edit_text(f'`1` RUB \= `{result:.6g}` {call.data}', parse_mode='MarkdownV2')
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)

@@ -11,7 +11,7 @@ token = env('TELEGRAM')
 bot = Bot(token)
 dp = Dispatcher(bot)
 
-def inline(lst: list, width: int = 6, f_t: str = '') -> types.InlineKeyboardMarkup:
+def inline(lst: list, width: int = 3, f_t: str = '') -> types.InlineKeyboardMarkup:
     kb = types.InlineKeyboardMarkup(row_width=width, width=1200)
     button_lst = []
     for item in lst:
