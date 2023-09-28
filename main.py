@@ -12,7 +12,7 @@ async def start(message: types.Message):
 
 @dp.message_handler(commands=['cr', 'c-r', 'c_r', 'currate', 'cur-rate', 'cur_rate'])
 async def cur_rate(message: types.Message):
-    await message.answer('Выберете *валюту*, из которой вы конвертируете: ', reply_markup=cur_(), parse_mode='MarkdownV2')
+    await message.answer('Выберете *валюту*:', reply_markup=cur_(), parse_mode='MarkdownV2')
     sql.set_state(message.from_user.id, 4)
 
 @dp.message_handler(commands=['c', 'cur', 'currency'])
@@ -56,7 +56,7 @@ async def get_cur(message: types.Message):
 async def get_cur_rate(call: types.CallbackQuery):
     data = requests.get('https://www.cbr-xml-daily.ru/latest.js').json()
     data = data["rates"]
-
+    data.update({'RUB': 1.0})
     result = (1 / data[call.data])
     await call.message.edit_text(f'`1` RUB \= `{result:.6g}` {call.data}', parse_mode='MarkdownV2')
 
