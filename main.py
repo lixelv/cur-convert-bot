@@ -58,7 +58,7 @@ async def get_cur_rate(call: types.CallbackQuery):
     data = data["rates"]
     data.update({'RUB': 1.0})
     result = (1 / data[call.data])
-    await call.message.edit_text(f'`1` RUB \= `{result:.6g}` {call.data}', parse_mode='MarkdownV2')
+    await call.message.edit_text(f'`{result:.6g}` RUB \= `1` {call.data}', parse_mode='MarkdownV2')
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)
