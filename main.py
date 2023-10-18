@@ -2,7 +2,12 @@ import requests
 from time import sleep
 from aiogram import executor
 from cnf import *
+import signal
+import os
 
+def signal_handler(sig, frame):
+    print("Выход...")
+    os.kill(os.getpid(), signal.SIGTERM)
 
 @dp.message_handler(commands=['start'])
 async def start(message: types.Message):
@@ -62,12 +67,11 @@ async def get_cur_rate(call: types.CallbackQuery):
     await call.message.edit_text(f'`1` {call.data} \= `{result:.6g}` RUB', parse_mode='MarkdownV2')
 
 if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
     while True:
         try:
             executor.start_polling(dp, skip_updates=True)
-        except KeyboardInterrupt:
-            print("Выход...")
-            break
+            
         except Exception as e:
             print(e)
             sleep(240)
