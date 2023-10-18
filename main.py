@@ -1,4 +1,5 @@
 import requests
+from time import sleep
 from aiogram import executor
 from cnf import *
 
@@ -61,4 +62,9 @@ async def get_cur_rate(call: types.CallbackQuery):
     await call.message.edit_text(f'`1` {call.data} \= `{result:.6g}` RUB', parse_mode='MarkdownV2')
 
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    while True:
+        try:
+            executor.start_polling(dp, skip_updates=True)
+        except Exception as e:
+            print(e)
+            sleep(240)
