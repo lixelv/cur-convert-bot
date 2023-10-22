@@ -35,7 +35,7 @@ async def get_abbreviations(message: types.Message):
 async def get_full_abbreviations(message: types.Message):
     msg = ''
     for cur in cur_dict.keys():
-        msg += f"`{cur}` \- `{cur_dict[cur]}`\n"
+        msg += f"{cur} \- {cur_dict[cur]}\n"
         
     await message.answer(msg, parse_mode='MarkdownV2')
 
