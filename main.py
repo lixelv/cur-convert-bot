@@ -18,18 +18,23 @@ async def start(message: types.Message):
 
 @dp.message_handler(commands=['cr', 'c-r', 'c_r', 'currate', 'cur-rate', 'cur_rate'])
 async def cur_rate(message: types.Message):
-    await message.answer('Выберете *валюту*:', reply_markup=cur_(), parse_mode='MarkdownV2')
+    await message.answer('Выберете абревиатеру *валюты*:', reply_markup=cur(), parse_mode='MarkdownV2')
     sql.set_state(message.from_user.id, 4)
 
 @dp.message_handler(commands=['c', 'cur', 'currency'])
-async def cur(message: types.Message):
-    await message.answer('Выберете *валюту*, из которой вы конвертируете: ', reply_markup=cur_(f_t='_'), parse_mode='MarkdownV2')
+async def _cur_(message: types.Message):
+    await message.answer('Выберете абревиатеру *валюты*, из которой вы конвертируете:', reply_markup=cur(f_t='_'), parse_mode='MarkdownV2')
     sql.set_state(message.from_user.id, 1)
+    
+@dp.message_handler(commands=['get_abbreviations', 'get_abr'])
+async def get_abbreviations(message: types.Message):
+    await message.answer('Выберете абревиатеру *валюты*, название которой вы хотите получить:', reply_markup=cur(f_t='_'), parse_mode='MarkdownV2')
+    sql.set_state(message.from_user.id, 5)
 
 @dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 1)
 async def cur_from(call: types.CallbackQuery):
     sql.set_data(call.from_user.id, call.data.replace('_', ''))
-    await call.message.edit_text('Выберете *валюту*, в которую конвертируете: ', reply_markup=cur_(), parse_mode='MarkdownV2')
+    await call.message.edit_text('Выберете абревиатеру *валюты*, в которую конвертируете:', reply_markup=cur(), parse_mode='MarkdownV2')
     # await call.message.delete()
     sql.set_state(call.from_user.id, 2)
 
@@ -57,7 +62,7 @@ async def get_cur(message: types.Message):
     sub_data = sub_data.split('_')
     result = (data[sub_data[1]] / data[sub_data[0]]) * message.text
     await message.answer(f'`{message.text}` {sub_data[0]} \= `{result:.6g}` {sub_data[1]}', parse_mode='MarkdownV2')
-    await sql.set_state(message.from_user.id, 0)
+    sql.set_state(message.from_user.id, 0)
 
 @dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 4)
 async def get_cur_rate(call: types.CallbackQuery):
@@ -76,3 +81,8 @@ if __name__ == "__main__":
         except Exception as e:
             print(e)
             sleep(240)
+            
+@dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 5)
+async def call_get_abbreviations(call: types.CallbackQuery):
+    currency = call.data
+    await call.message.edit_text(f'`{currency}` - `{cur_dict[currency]}`', parse_mode='MarkdownV2')
