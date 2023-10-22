@@ -28,7 +28,7 @@ async def _cur_(message: types.Message):
     
 @dp.message_handler(commands=['get_abbreviations', 'get_abr'])
 async def get_abbreviations(message: types.Message):
-    await message.answer('Выберете абревиатеру *валюты*, название которой вы хотите получить:', reply_markup=cur(f_t='_'), parse_mode='MarkdownV2')
+    await message.answer('Выберете абревиатеру *валюты*, название которой вы хотите получить:', reply_markup=cur(), parse_mode='MarkdownV2')
     sql.set_state(message.from_user.id, 5)
     
 @dp.message_handler(commands=['get_full_abbreviations', 'get_full_abr'])
