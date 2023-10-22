@@ -57,6 +57,7 @@ async def get_cur(message: types.Message):
     sub_data = sub_data.split('_')
     result = (data[sub_data[1]] / data[sub_data[0]]) * message.text
     await message.answer(f'`{message.text}` {sub_data[0]} \= `{result:.6g}` {sub_data[1]}', parse_mode='MarkdownV2')
+    await sql.set_state(message.from_user.id, 0)
 
 @dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 4)
 async def get_cur_rate(call: types.CallbackQuery):
