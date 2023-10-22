@@ -35,7 +35,9 @@ async def get_abbreviations(message: types.Message):
 async def get_full_abbreviations(message: types.Message):
     msg = ''
     for cur in cur_dict.keys():
-        msg += f"`{cur}` - `{cur_dict[cur]}`"
+        msg += f"`{cur}` \- `{cur_dict[cur]}`"
+        
+    await message.answer(msg, parse_mode='MarkdownV2')
 
 @dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 1)
 async def cur_from(call: types.CallbackQuery):
@@ -81,7 +83,7 @@ async def get_cur_rate(call: types.CallbackQuery):
 @dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 5)
 async def call_get_abbreviations(call: types.CallbackQuery):
     currency = call.data
-    await call.message.edit_text(f'`{currency}` - `{cur_dict[currency]}`', parse_mode='MarkdownV2')
+    await call.message.edit_text(f'`{currency}` \- `{cur_dict[currency]}`', parse_mode='MarkdownV2')
     sql.set_state(call.from_user.id, 0)
 
 if __name__ == "__main__":
