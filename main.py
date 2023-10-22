@@ -30,6 +30,12 @@ async def _cur_(message: types.Message):
 async def get_abbreviations(message: types.Message):
     await message.answer('Выберете абревиатеру *валюты*, название которой вы хотите получить:', reply_markup=cur(f_t='_'), parse_mode='MarkdownV2')
     sql.set_state(message.from_user.id, 5)
+    
+@dp.message_handler(commands=['get_full_abbreviations', 'get_full_abr'])
+async def get_full_abbreviations(message: types.Message):
+    msg = ''
+    for cur in cur_dict.keys():
+        msg += f"`{cur}` - `{cur_dict[cur]}`"
 
 @dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 1)
 async def cur_from(call: types.CallbackQuery):
@@ -71,6 +77,12 @@ async def get_cur_rate(call: types.CallbackQuery):
     data.update({'RUB': 1.0})
     result = (1 / data[call.data])
     await call.message.edit_text(f'`1` {call.data} \= `{result:.6g}` RUB', parse_mode='MarkdownV2')
+            
+@dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 5)
+async def call_get_abbreviations(call: types.CallbackQuery):
+    currency = call.data
+    await call.message.edit_text(f'`{currency}` - `{cur_dict[currency]}`', parse_mode='MarkdownV2')
+    sql.set_state(call.from_user.id, 0)
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
@@ -81,8 +93,3 @@ if __name__ == "__main__":
         except Exception as e:
             print(e)
             sleep(240)
-            
-@dp.callback_query_handler(lambda call: sql.state(call.from_user.id) == 5)
-async def call_get_abbreviations(call: types.CallbackQuery):
-    currency = call.data
-    await call.message.edit_text(f'`{currency}` - `{cur_dict[currency]}`', parse_mode='MarkdownV2')
